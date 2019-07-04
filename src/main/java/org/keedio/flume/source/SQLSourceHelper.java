@@ -151,6 +151,11 @@ public class SQLSourceHelper {
             StringBuffer result = new StringBuffer("SELECT " + columnsToSelect + " FROM " + table );
             if(!isTransferIncrement())
                 return result.toString();
+            if (sourceType!= null && DB_SOURCE_TYPE_ORACLE.equals(sourceType)){
+                result.append(" WHERE "+ timeColumn + " >= to_date('" + currentIndex + "','yyyy-mm-dd hh24:mi:ss') AND " + timeColumn + " < to_date('" + maxTime + "','yyyy-mm-dd hh24:mi:ss') " +
+                        "order by "+timeColumn+" asc");
+                return result.toString();
+            }
             if (TIME_COLUMN_TYPE_INT.equals(timeColumnType)) {
                 result.append(" WHERE " + timeColumn + " >= " + currentIndex + " AND " + timeColumn + " < " + maxTime +
                         " order by " + timeColumn + " asc");

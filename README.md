@@ -81,6 +81,7 @@ Mandatory properties in <b>bold</b>
 | time.column | - | 时间列 |  
 | time.column.type | - | 时间列类型int/string |  
 | source.transfer.method | - | 数据采集方式,增量/全量 |  
+| source.db.type | - | 数据源类型(mysql/sqlserver/oracle),当前oracle语法与其他数据源不一致时使用 |
 
 
 Standard Query
