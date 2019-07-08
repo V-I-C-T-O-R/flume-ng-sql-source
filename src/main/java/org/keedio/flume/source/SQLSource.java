@@ -18,31 +18,26 @@
  *******************************************************************************/
 package org.keedio.flume.source;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.EventDeliveryException;
-import org.apache.flume.PollableSource;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.event.SimpleEvent;
 import org.apache.flume.source.AbstractPollableSource;
-import org.apache.flume.source.AbstractSource;
 import org.json.simple.JSONValue;
 import org.keedio.flume.metrics.SqlSourceCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*Support UTF-8 character encoding.*/
-import com.google.common.base.Charsets;
-import java.nio.charset.Charset;
 
 
 /**
@@ -151,7 +146,13 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
         public void write(List<Map<String, Object>> mapAlls) throws IOException {
             for (Map<String, Object> map : mapAlls) {
                 Event event = new SimpleEvent();
-                String jsonBody = JSONValue.toJSONString(map);
+                String jsonBody = JSON.toJSONString(map, SerializerFeature.WriteNullStringAsEmpty
+                        ,SerializerFeature.WriteEnumUsingToString
+                        ,SerializerFeature.WriteNullBooleanAsFalse
+                        ,SerializerFeature.WriteNullListAsEmpty
+                );
+                //simple-json转json字符串有漏洞
+                //String jsonBody = JSONValue.toJSONString(map);
                 event.setBody(jsonBody.getBytes());
 
                 Map<String, String> headers = new HashMap<String, String>();

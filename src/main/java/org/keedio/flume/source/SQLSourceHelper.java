@@ -1,26 +1,20 @@
 package org.keedio.flume.source;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import com.google.common.base.Charsets;
-import org.hibernate.cfg.Configuration;
+import org.apache.flume.Context;
+import org.apache.flume.conf.ConfigurationException;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import static org.json.simple.parser.ParseException.*;
-
-import org.apache.flume.conf.ConfigurationException;
-import org.apache.flume.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.json.simple.parser.ParseException.ERROR_UNEXPECTED_EXCEPTION;
 
 /**
  * Helper to manage configuration parameters and utility methods <p>
@@ -371,6 +365,10 @@ public class SQLSourceHelper {
      */
     void setCurrentIndex(String newValue) {
         currentIndex = newValue;
+    }
+
+    public String getTable() {
+        return table;
     }
 
     /*
