@@ -150,6 +150,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
                         ,SerializerFeature.WriteEnumUsingToString
                         ,SerializerFeature.WriteNullBooleanAsFalse
                         ,SerializerFeature.WriteNullListAsEmpty
+                        ,SerializerFeature.WriteMapNullValue
                 );
                 //simple-json转json字符串有漏洞
                 //String jsonBody = JSONValue.toJSONString(map);
