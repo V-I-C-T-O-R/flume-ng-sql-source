@@ -146,6 +146,14 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
         public void write(List<Map<String, Object>> mapAlls) throws IOException {
             for (Map<String, Object> map : mapAlls) {
                 Event event = new SimpleEvent();
+                //防止fastjson将datetime强转成时间戳
+//                String jsonBody = JSON.toJSONStringWithDateFormat(map,"yyyy-MM-dd HH:mm:ss"
+//                        SerializerFeature.WriteNullStringAsEmpty
+//                        ,SerializerFeature.WriteEnumUsingToString
+//                        ,SerializerFeature.WriteNullBooleanAsFalse
+//                        ,SerializerFeature.WriteNullListAsEmpty
+//                        ,SerializerFeature.WriteMapNullValue
+//                        );
                 String jsonBody = JSON.toJSONString(map, SerializerFeature.WriteNullStringAsEmpty
                         ,SerializerFeature.WriteEnumUsingToString
                         ,SerializerFeature.WriteNullBooleanAsFalse
