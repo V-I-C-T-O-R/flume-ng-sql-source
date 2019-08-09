@@ -10,6 +10,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class HibernateHelper {
 	private Session session;
 	private Configuration config;
 	private SQLSourceHelper sqlSourceHelper;
+	private ServiceRegistry serviceRegistry;
 
 	/**
 	 * Constructor to initialize hibernate configuration parameters
@@ -58,8 +60,9 @@ public class HibernateHelper {
 	public void establishSession() {
 
 		LOG.info("Opening hibernate session");
+		serviceRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+		factory = config.buildSessionFactory(serviceRegistry);
 
-		factory = config.buildSessionFactory();
 		session = factory.openSession();
 		session.setCacheMode(CacheMode.IGNORE);
 
@@ -72,8 +75,11 @@ public class HibernateHelper {
 	public void closeSession() {
 
 		LOG.info("Closing hibernate session");
-
-		session.close();
+		//如果session获取通过getCurrentSession()获得的Session提交时自动关闭，
+		// 其不用在session.close(),如果在调用session.close().其相当于session关闭两次 ,
+		// 所以会出现Session was already closed异常
+		if(session.isOpen() || session.isConnected())
+			session.close();
 		factory.close();
 	}
 
