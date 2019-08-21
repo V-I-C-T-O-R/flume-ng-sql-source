@@ -29,6 +29,25 @@ Copy flume-ng-sql-source-<version>.jar in target folder into flume plugins dir f
 
 ### Specific installation by database engine
 
+##### Oracle
+Download the official oracle jdbc driver and copy in libext flume plugins directory:
+```
+$ cp ojdbc8.jar $FLUME_HOME/plugins.d/sql-source/libext
+```
+注意:  
+agent.sources.sqlSource.hibernate.connection.url = jdbc:oracle:thin:@127.0.0.1:1521/test
+agent.sources.sqlSource.hibernate.dialect = org.hibernate.dialect.Oracle10gDialect
+agent.sources.sqlSource.hibernate.connection.driver_class = oracle.jdbc.driver.OracleDriver
+##### Sap HaNa
+Download the official hana jdbc driver and copy in libext flume plugins directory:
+```
+$ cp ngdbc.jar $FLUME_HOME/plugins.d/sql-source/libext
+```
+注意:  
+agent.sources.sqlSource.hibernate.connection.url = jdbc:sap://127.0.0.1:30015?autoReconnect=true
+agent.sources.sqlSource.hibernate.dialect = org.hibernate.dialect.HANAColumnStoreDialect
+agent.sources.sqlSource.hibernate.connection.driver_class = com.sap.db.jdbc.Driver
+
 ##### MySQL
 Download the official mysql jdbc driver and copy in libext flume plugins directory:
 ```
@@ -36,6 +55,10 @@ $ wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.
 $ tar xzf mysql-connector-java-5.1.35.tar.gz
 $ cp mysql-connector-java-5.1.35-bin.jar $FLUME_HOME/plugins.d/sql-source/libext
 ```
+注意:  
+agent.sources.sqlSource.hibernate.connection.url = jdbc:mysql://127.0.0.1:3306/test?autoReconnect=true
+agent.sources.sqlSource.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect
+agent.sources.sqlSource.hibernate.connection.driver_class = com.mysql.jdbc.Driver
 
 ##### Microsoft SQLServer
 Download the official Microsoft 4.1 Sql Server jdbc driver and copy in libext flume plugins directory:  
@@ -44,6 +67,10 @@ Download URL: https://www.microsoft.com/es-es/download/details.aspx?id=11774
 $ tar xzf sqljdbc_4.1.5605.100_enu.tar.gz
 $ cp sqljdbc_4.1/enu/sqljdbc41.jar $FLUME_HOME/plugins.d/sql-source/libext
 ```
+注意:  
+agent.sources.sqlSource.hibernate.connection.url = jdbc:sqlserver://127.0.0.1:1433;DatabaseName=test;autoReconnect=true
+agent.sources.sqlSource.hibernate.dialect = org.keedio.flume.source.SQLServerCustomDialect
+agent.sources.sqlSource.hibernate.connection.driver_class = com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 ##### IBM DB2
 Download the official IBM DB2 jdbc driver and copy in libext flume plugins directory:
@@ -81,7 +108,7 @@ Mandatory properties in <b>bold</b>
 | time.column | - | 时间列 |  
 | time.column.type | - | 时间列类型int/string |  
 | source.transfer.method | - | 数据采集方式,增量/全量 |  
-| source.db.type | - | 数据源类型(mysql/sqlserver/oracle),当前oracle语法与其他数据源不一致时使用 |
+| source.db.type | - | 数据源类型(mysql/sqlserver/oracle/Hana),当前oracle语法与其他数据源不一致时使用 |
 
 
 Standard Query

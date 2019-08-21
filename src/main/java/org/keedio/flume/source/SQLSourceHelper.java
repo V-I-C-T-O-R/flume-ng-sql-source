@@ -146,21 +146,25 @@ public class SQLSourceHelper {
             if(!isTransferIncrement())
                 return result.toString();
             if (sourceType!= null && DB_SOURCE_TYPE_ORACLE.equals(sourceType)){
-                result.append(" WHERE "+ timeColumn + " >= to_date('" + currentIndex + "','yyyy-mm-dd hh24:mi:ss') AND " + timeColumn + " < to_date('" + maxTime + "','yyyy-mm-dd hh24:mi:ss') " +
+                result.append(" WHERE "+ timeColumn + " > to_date('" + currentIndex + "','yyyy-mm-dd hh24:mi:ss') AND " + timeColumn + " <= to_date('" + maxTime + "','yyyy-mm-dd hh24:mi:ss') " +
                         "order by "+timeColumn+" asc");
                 return result.toString();
             }
             if (TIME_COLUMN_TYPE_INT.equals(timeColumnType)) {
-                result.append(" WHERE " + timeColumn + " >= " + currentIndex + " AND " + timeColumn + " < " + maxTime +
+                result.append(" WHERE " + timeColumn + " > " + currentIndex + " AND " + timeColumn + " <= " + maxTime +
                         " order by " + timeColumn + " asc");
             }else {
-                result.append(" WHERE " + timeColumn + " >= '" + currentIndex + "' AND " + timeColumn + "< '" + maxTime +
+                result.append(" WHERE " + timeColumn + " > '" + currentIndex + "' AND " + timeColumn + "<= '" + maxTime +
                         "' order by " + timeColumn + " asc");
             }
             return result.toString();
         }
         if (customQuery.contains("$@$")) {
-            return customQuery.replace("$@$", currentIndex);
+            String result = customQuery;
+            if(customQuery.contains("$&$")){
+                result = customQuery.replace("$&$", maxTime);
+            }
+            return result.replace("$@$", currentIndex);
         }
         return customQuery;
     }

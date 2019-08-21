@@ -10,6 +10,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class HibernateHelper {
 	private Session session;
 	private Configuration config;
 	private SQLSourceHelper sqlSourceHelper;
+	private ServiceRegistry serviceRegistry;
 
 	/**
 	 * Constructor to initialize hibernate configuration parameters
@@ -58,8 +60,9 @@ public class HibernateHelper {
 	public void establishSession() {
 
 		LOG.info("Opening hibernate session");
+		serviceRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+		factory = config.buildSessionFactory(serviceRegistry);
 
-		factory = config.buildSessionFactory();
 		session = factory.openSession();
 		session.setCacheMode(CacheMode.IGNORE);
 
@@ -72,9 +75,10 @@ public class HibernateHelper {
 	public void closeSession() {
 
 		LOG.info("Closing hibernate session");
-
-		session.close();
-		factory.close();
+		if(session.isOpen() || session.isConnected())
+			session.close();
+		if(!factory.isClosed())
+			factory.close();
 	}
 
 	/**
@@ -99,12 +103,14 @@ public class HibernateHelper {
 		if(sqlSourceHelper.isTransferIncrement()){
 			try{
 				String sql = sqlSourceHelper.maxQuery();
+				LOG.info("执行查询max时间sql:"+sql);
 				max = session.createSQLQuery(sql).setResultTransformer(Transformers.TO_LIST).list();
 				maxTime = max.get(0).get(0).toString();
 				if(!sqlSourceHelper.isTimeColumnIntType()) {
 					maxTime = maxTime.substring(0,19);
 				}
 			}catch (Exception e){
+				LOG.info("执行查询max时间异常,连接被重置:"+e.getMessage());
 				resetConnection();
 			}
 			if("".equals(maxTime)){
@@ -159,8 +165,10 @@ public class HibernateHelper {
 	}
 
 	private void resetConnection() throws InterruptedException{
-		session.close();
-		factory.close();
+		if(session.isOpen() || session.isConnected())
+			session.close();
+		if(!factory.isClosed())
+			factory.close();
 		establishSession();
 	}
 }
