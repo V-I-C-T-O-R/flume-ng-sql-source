@@ -116,17 +116,18 @@ public class HibernateHelper {
 			}catch (Exception e){
 				LOG.info("执行查询max时间异常,连接被重置:"+e.getMessage());
 				resetConnection();
+                return rowsList;
 			}
-			if("".equals(maxTime)){
+#if("".equals(maxTime)){
 				//服务器时钟慢了5分钟,笑哭
-				Date now = new Date(new Date().getTime()+300000);
-
-				if (SQLSourceHelper.TIME_COLUMN_TYPE_INT.equals(sqlSourceHelper.getTimeColumnType())) {
-					maxTime = String.valueOf(now.getTime() / 1000);
-				}else{
-					maxTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now);
-				}
-			}
+#				Date now = new Date(new Date().getTime()+300000);
+#
+#				if (SQLSourceHelper.TIME_COLUMN_TYPE_INT.equals(sqlSourceHelper.getTimeColumnType())) {
+#					maxTime = String.valueOf(now.getTime() / 1000);
+#				}else{
+#					maxTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now);
+#				}
+#			}
 			LOG.info("最大时间戳:"+maxTime);
 		}else{
 			LOG.info("全量模式");
