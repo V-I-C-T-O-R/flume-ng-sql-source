@@ -95,6 +95,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
                 sqlSourceCounter.incrementEventCount(result.size());
 
                 sqlSourceHelper.updateStatusFile();
+                LOG.info("finish flush from source to channel");
             }
 
             sqlSourceCounter.endProcess(result.size());
