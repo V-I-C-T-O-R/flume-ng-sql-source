@@ -18,7 +18,7 @@ import org.apache.flume.Context;
 
 /**
  * Helper class to manage hibernate sessions and perform queries
- * 
+ *
  * @author <a href="mailto:mvalle@keedio.com">Marcelo Valle</a>
  *
  */
@@ -57,18 +57,18 @@ public class HibernateHelper {
 	/**
 	 * Connect to database using hibernate
 	 */
-	public void establishSession() throws InterruptedException {
+	public void establishSession(){
 
 		LOG.info("Opening hibernate session");
-        if(factory == null || factory.isClosed()){
-            serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-            factory = config.buildSessionFactory(serviceRegistry);
-        }
+		if(factory == null || factory.isClosed()){
+			serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+			factory = config.buildSessionFactory(serviceRegistry);
+		}
 
 		session = factory.openSession();
 		session.setCacheMode(CacheMode.IGNORE);
-
 		session.setDefaultReadOnly(sqlSourceHelper.isReadOnlySession());
+		LOG.info("Open hibernate session finished");
 	}
 
 	/**
@@ -80,6 +80,7 @@ public class HibernateHelper {
 		try{
 			if(session.isOpen() || session.isConnected())
 				session.close();
+			LOG.info("Close hibernate session finished");
 		}catch (Exception e){
 			LOG.error("close session resources error",e);
 		}
@@ -87,9 +88,11 @@ public class HibernateHelper {
 	}
 
 	public void closeFactory(){
+		LOG.info("Closing hibernate factory");
 		try{
 			if(!factory.isClosed())
 				factory.close();
+			LOG.info("Closing hibernate factory finished");
 		}catch (Exception e){
 			LOG.error("close session factory error",e);
 		}
@@ -108,7 +111,7 @@ public class HibernateHelper {
 		List<Map<String,Object>> rowsList = new ArrayList<Map<String,Object>>() ;
 		Query query;
 
-		if (!session.isConnected()){
+		if (!session.isConnected()||!session.isOpen()){
 			resetConnection();
 		}
 
@@ -124,9 +127,9 @@ public class HibernateHelper {
 					maxTime = maxTime.substring(0,19);
 				}
 			}catch (Exception e){
-				LOG.info("执行查询max时间异常,连接被重置:"+e.getMessage());
+				LOG.info("执行查询max时间异常,连接被重置:",e);
 				resetConnection();
-                return rowsList;
+				return rowsList;
 			}
 
 			LOG.info("最大时间戳:"+maxTime);

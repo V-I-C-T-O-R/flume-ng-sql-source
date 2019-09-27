@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -42,7 +42,7 @@ import java.util.Map;
 
 /**
  * A Source to read data from a SQL database. This source ask for new data in a table each configured time.<p>
- * 
+ *
  * @author <a href="mailto:mvalle@keedio.com">Marcelo Valle</a>
  */
 public class SQLSource extends AbstractPollableSource implements Configurable{
@@ -70,7 +70,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
 
         /* Establish connection with database */
         hibernateHelper = new HibernateHelper(sqlSourceHelper);
-
+        hibernateHelper.establishSession();
         /* Instantiate the custom Writer */
         customWriter = new ChannelWriter();
 
@@ -83,7 +83,6 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
     public Status doProcess() throws EventDeliveryException {
 
         try {
-            hibernateHelper.establishSession();
             sqlSourceCounter.startProcess();
 
             List<Map<String,Object>> result = hibernateHelper.executeQuery();
@@ -99,7 +98,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
             }
 
             sqlSourceCounter.endProcess(result.size());
-            hibernateHelper.closeSession();
+
             if (result.size() < sqlSourceHelper.getMaxRows()){
                 Thread.sleep(sqlSourceHelper.getRunQueryDelay());
             }
