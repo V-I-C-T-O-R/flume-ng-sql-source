@@ -79,10 +79,14 @@ public class HibernateHelper {
 	public void closeSession() {
 
 		LOG.info("Closing hibernate session");
-		if(session.isOpen() || session.isConnected())
-			session.close();
-		if(!factory.isClosed())
-			factory.close();
+		try{
+			if(session.isOpen() || session.isConnected())
+				session.close();
+			if(!factory.isClosed())
+				factory.close();
+		}catch (Exception e){
+			LOG.error("close session resources error",e);
+		}
 	}
 
 	/**
@@ -118,16 +122,7 @@ public class HibernateHelper {
 				resetConnection();
                 return rowsList;
 			}
-#if("".equals(maxTime)){
-				//服务器时钟慢了5分钟,笑哭
-#				Date now = new Date(new Date().getTime()+300000);
-#
-#				if (SQLSourceHelper.TIME_COLUMN_TYPE_INT.equals(sqlSourceHelper.getTimeColumnType())) {
-#					maxTime = String.valueOf(now.getTime() / 1000);
-#				}else{
-#					maxTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now);
-#				}
-#			}
+
 			LOG.info("最大时间戳:"+maxTime);
 		}else{
 			LOG.info("全量模式");
@@ -170,10 +165,7 @@ public class HibernateHelper {
 	}
 
 	private void resetConnection() throws InterruptedException{
-		if(session.isOpen() || session.isConnected())
-			session.close();
-		if(!factory.isClosed())
-			factory.close();
+		closeSession();
 		establishSession();
 	}
 }
