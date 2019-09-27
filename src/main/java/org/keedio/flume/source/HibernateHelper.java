@@ -57,15 +57,13 @@ public class HibernateHelper {
 	/**
 	 * Connect to database using hibernate
 	 */
-	public void establishSession() {
+	public void establishSession() throws InterruptedException {
 
 		LOG.info("Opening hibernate session");
-		serviceRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
-        /*
-         * new ServiceRegistryBuilder()此方法已废弃，可使用下面的方式获取ServiceRegistry
-         */
-        //serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-		factory = config.buildSessionFactory(serviceRegistry);
+        if(factory == null || factory.isClosed()){
+            serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+            factory = config.buildSessionFactory(serviceRegistry);
+        }
 
 		session = factory.openSession();
 		session.setCacheMode(CacheMode.IGNORE);
@@ -82,10 +80,18 @@ public class HibernateHelper {
 		try{
 			if(session.isOpen() || session.isConnected())
 				session.close();
+		}catch (Exception e){
+			LOG.error("close session resources error",e);
+		}
+		closeFactory();
+	}
+
+	public void closeFactory(){
+		try{
 			if(!factory.isClosed())
 				factory.close();
 		}catch (Exception e){
-			LOG.error("close session resources error",e);
+			LOG.error("close session factory error",e);
 		}
 	}
 

@@ -70,7 +70,6 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
 
         /* Establish connection with database */
         hibernateHelper = new HibernateHelper(sqlSourceHelper);
-        hibernateHelper.establishSession();
 
         /* Instantiate the custom Writer */
         customWriter = new ChannelWriter();
