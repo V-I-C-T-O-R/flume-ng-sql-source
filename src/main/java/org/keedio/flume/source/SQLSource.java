@@ -84,6 +84,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
     public Status doProcess() throws EventDeliveryException {
 
         try {
+            hibernateHelper.establishSession();
             sqlSourceCounter.startProcess();
 
             List<Map<String,Object>> result = hibernateHelper.executeQuery();
@@ -99,7 +100,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
             }
 
             sqlSourceCounter.endProcess(result.size());
-
+            hibernateHelper.closeSession();
             if (result.size() < sqlSourceHelper.getMaxRows()){
                 Thread.sleep(sqlSourceHelper.getRunQueryDelay());
             }
