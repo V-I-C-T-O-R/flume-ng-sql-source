@@ -80,15 +80,14 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
      */
     @Override
     public Status doProcess() throws EventDeliveryException {
-
+        List<Map<String, Object>> result = null;
         try {
             hibernateHelper.establishSession();
             sqlSourceCounter.startProcess();
 
-            List<Map<String,Object>> result = hibernateHelper.executeQuery();
+            result = hibernateHelper.executeQuery();
 
-            if (!result.isEmpty())
-            {
+            if (!result.isEmpty()) {
                 customWriter.write(result);
                 customWriter.flush();
                 sqlSourceCounter.incrementEventCount(result.size());
@@ -98,17 +97,25 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
             }
 
             sqlSourceCounter.endProcess(result.size());
-            hibernateHelper.closeSession();
-            if (result.size() < sqlSourceHelper.getMaxRows()){
-                Thread.sleep(sqlSourceHelper.getRunQueryDelay());
-            }
-
-            return Status.READY;
-
         } catch (IOException | InterruptedException e) {
             LOG.error("Error procesing row", e);
             return Status.BACKOFF;
+        } catch (Exception e) {
+            LOG.error("Unknow Error:", e);
+            return Status.BACKOFF;
+        } finally {
+            hibernateHelper.closeSession();
         }
+
+        if (result.size() < sqlSourceHelper.getMaxRows()) {
+            try {
+                Thread.sleep(sqlSourceHelper.getRunQueryDelay());
+            } catch (InterruptedException e) {
+                LOG.error("Thread sleep was interrupted:", e);
+            }
+        }
+
+        return Status.READY;
     }
 
     /**
