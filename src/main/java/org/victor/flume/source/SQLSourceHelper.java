@@ -1,4 +1,4 @@
-package org.keedio.flume.source;
+package org.victor.flume.source;
 
 import org.apache.flume.Context;
 import org.apache.flume.conf.ConfigurationException;

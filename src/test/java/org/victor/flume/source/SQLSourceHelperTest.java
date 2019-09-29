@@ -1,4 +1,4 @@
-package org.keedio.flume.source;
+package org.victor.flume.source;
 
 import java.io.File;
 import java.io.IOException;

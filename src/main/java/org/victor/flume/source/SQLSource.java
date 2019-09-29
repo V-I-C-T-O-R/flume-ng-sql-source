@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *******************************************************************************/
-package org.keedio.flume.source;
+package org.victor.flume.source;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -26,8 +26,7 @@ import org.apache.flume.EventDeliveryException;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.event.SimpleEvent;
 import org.apache.flume.source.AbstractPollableSource;
-import org.json.simple.JSONValue;
-import org.keedio.flume.metrics.SqlSourceCounter;
+import org.victor.flume.metrics.SqlSourceCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +69,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
 
         /* Establish connection with database */
         hibernateHelper = new HibernateHelper(sqlSourceHelper);
-        hibernateHelper.establishSession();
+
         /* Instantiate the custom Writer */
         customWriter = new ChannelWriter();
 
@@ -83,6 +82,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
     public Status doProcess() throws EventDeliveryException {
 
         try {
+            hibernateHelper.establishSession();
             sqlSourceCounter.startProcess();
 
             List<Map<String,Object>> result = hibernateHelper.executeQuery();
@@ -98,7 +98,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
             }
 
             sqlSourceCounter.endProcess(result.size());
-
+            hibernateHelper.closeSession();
             if (result.size() < sqlSourceHelper.getMaxRows()){
                 Thread.sleep(sqlSourceHelper.getRunQueryDelay());
             }

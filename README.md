@@ -69,7 +69,7 @@ $ cp sqljdbc_4.1/enu/sqljdbc41.jar $FLUME_HOME/plugins.d/sql-source/libext
 ```
 注意:  
 agent.sources.sqlSource.hibernate.connection.url = jdbc:sqlserver://127.0.0.1:1433;DatabaseName=test;autoReconnect=true
-agent.sources.sqlSource.hibernate.dialect = org.keedio.flume.source.SQLServerCustomDialect
+agent.sources.sqlSource.hibernate.dialect = org.victor.flume.source.SQLServerCustomDialect
 agent.sources.sqlSource.hibernate.connection.driver_class = com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 ##### IBM DB2
@@ -83,7 +83,7 @@ Mandatory properties in <b>bold</b>
 | Property Name | Default | Description |
 | ----------------------- | :-----: | :---------- |
 | <b>channels</b> | - | Connected channel names |
-| <b>type</b> | - | The component type name, needs to be org.keedio.flume.source.SQLSource  |
+| <b>type</b> | - | The component type name, needs to be org.victor.flume.source.SQLSource  |
 | <b>hibernate.connection.url</b> | - | Url to connect with the remote Database |
 | <b>hibernate.connection.user</b> | - | Username to connect with the database |
 | <b>hibernate.connection.password</b> | - | Password to connect with the database |
@@ -139,7 +139,7 @@ agent.sinks = kafkaSink
 
 
 # For each one of the sources, the type is defined
-agent.sources.sqlSource.type = org.keedio.flume.source.SQLSource
+agent.sources.sqlSource.type = org.victor.flume.source.SQLSource
 
 agent.sources.sqlSource.hibernate.connection.url = jdbc:mysql://127.0.0.1:3306/test?autoReconnect=true
 
@@ -150,6 +150,14 @@ agent.sources.sqlSource.hibernate.connection.autocommit = true
 agent.sources.sqlSource.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect
 agent.sources.sqlSource.hibernate.connection.driver_class = com.mysql.jdbc.Driver
 agent.sources.sqlSource.hibernate.temp.use_jdbc_metadata_defaults=false
+agent.sources.sqlSource.hibernate.connection.provider_class = org.hibernate.connection.C3P0ConnectionProvider
+agent.sources.sqlSource.hibernate.c3p0.max_size = 5
+agent.sources.sqlSource.hibernate.c3p0.min_size = 3
+agent.sources.sqlSource.hibernate.c3p0.timeout = 5000
+agent.sources.sqlSource.hibernate.c3p0.max_statements = 10
+agent.sources.sqlSource.hibernate.c3p0.idle_test_period = 3000
+agent.sources.sqlSource.hibernate.c3p0.acquire_increment = 1
+agent.sources.sqlSource.hibernate.c3p0.validate = true
 
 agent.sources.sqlSource.table = test
 # Columns to import to kafka (default * import entire row)
@@ -168,10 +176,6 @@ agent.sources.sqlSource.source.transfer.method = incrementing
 
 agent.sources.sqlSource.batch.size = 2000
 agent.sources.sqlSource.max.rows = 3000
-
-agent.sources.sqlSource.hibernate.connection.provider_class = org.hibernate.connection.C3P0ConnectionProvider
-agent.sources.sqlSource.hibernate.c3p0.min_size=1
-agent.sources.sqlSource.hibernate.c3p0.max_size=3
 
 
 agent.channels.memoryChannel.type = memory
@@ -196,6 +200,79 @@ agent.sinks.kafkaSink.kafka.producer.acks = 1
 agent.sinks.kafkaSink.flumeBatchSize = 100
 ```
 
+```file channel
+agent.channels = fileChannel
+agent.sources = sqlSource
+agent.sinks = kuduSink
+
+
+# For each one of the sources, the type is defined
+agent.sources.sqlSource.type = org.victor.flume.source.SQLSource
+
+agent.sources.sqlSource.hibernate.connection.url = jdbc:mysql://127.0.0.1:3306/test?autoReconnect=true
+
+# Hibernate Database connection properties
+agent.sources.sqlSource.hibernate.connection.user =test 
+agent.sources.sqlSource.hibernate.connection.password = test
+agent.sources.sqlSource.hibernate.connection.autocommit = true
+agent.sources.sqlSource.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect
+agent.sources.sqlSource.hibernate.connection.driver_class = com.mysql.jdbc.Driver
+agent.sources.sqlSource.hibernate.temp.use_jdbc_metadata_defaults=false
+agent.sources.sqlSource.hibernate.c3p0.max_size = 5
+agent.sources.sqlSource.hibernate.c3p0.min_size = 3
+agent.sources.sqlSource.hibernate.c3p0.timeout = 5000
+agent.sources.sqlSource.hibernate.c3p0.max_statements = 10
+agent.sources.sqlSource.hibernate.c3p0.idle_test_period = 3000
+agent.sources.sqlSource.hibernate.c3p0.acquire_increment = 1
+agent.sources.sqlSource.hibernate.c3p0.validate = true
+
+agent.sources.sqlSource.table = test
+agent.sources.sqlSource.custom.query = select * from test.test where updateTime > '$@$' and updateTime <= '$&$'
+# Query delay, each configured milisecond the query will be sent
+agent.sources.sqlSource.run.query.delay=60000
+# Status file is used to save last readed row
+agent.sources.sqlSource.status.file.path = /data/flume_status
+agent.sources.sqlSource.status.file.name = test
+
+# Custom query
+agent.sources.sqlSource.start.from = 2019-09-25 00:00:00
+agent.sources.sqlSource.time.column = updateTime
+agent.sources.sqlSource.time.column.type = string
+agent.sources.sqlSource.source.transfer.method = incrementing
+
+agent.sources.sqlSource.batch.size = 3000
+agent.sources.sqlSource.max.rows = 1000000
+
+agent.sources.sqlSource.hibernate.connection.provider_class = org.hibernate.connection.C3P0ConnectionProvider
+agent.sources.sqlSource.hibernate.c3p0.min_size=1
+agent.sources.sqlSource.hibernate.c3p0.max_size=3
+
+# The channel can be defined as follows.
+agent.channels.fileChannel.type = file
+agent.channels.fileChannel.checkpointDir = /data/flume_checkpont/test
+agent.channels.fileChannel.dataDirs = /data/flume_datadirs/test
+agent.channels.fileChannel.capacity = 200000000
+
+agent.channels.fileChannel.keep-alive = 180
+agent.channels.fileChannel.write-timeout = 180
+agent.channels.fileChannel.checkpoint-timeout = 300
+agent.channels.fileChannel.transactionCapacity = 1000000
+
+agent.sources.sqlSource.channels = fileChannel
+agent.sinks.kuduSink.channel = fileChannel
+
+######配置kudu sink ##############################
+agent.sinks.kuduSink.type = com.flume.sink.kudu.KuduSink
+agent.sinks.kuduSink.masterAddresses = 192.168.0.1:7051,192.168.0.2:7051,192.168.0.3:7051
+agent.sinks.kuduSink.customKey = order_no
+agent.sinks.kuduSink.tableName = test
+agent.sinks.kuduSink.batchSize = 3000
+agent.sinks.kuduSink.namespace = test
+agent.sinks.kuduSink.producer.operation = upsert
+agent.sinks.kuduSink.producer = com.flume.sink.kudu.JsonKuduOperationProducer
+
+```
+
 Known Issues
 ---------
 An issue with Java SQL Types and Hibernate Types could appear Using SQL Server databases and SQL Server Dialect coming with Hibernate.  
@@ -205,7 +282,7 @@ Something like:
 org.hibernate.MappingException: No Dialect mapping for JDBC type: -15
 ```
 
-Use ```org.keedio.flume.source.SQLServerCustomDialect``` in flume configuration file to solve this problem.
+Use ```org.victor.flume.source.SQLServerCustomDialect``` in flume configuration file to solve this problem.
 
 Special thanks
 ---------------

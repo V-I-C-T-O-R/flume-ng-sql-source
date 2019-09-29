@@ -1,4 +1,4 @@
-package org.keedio.flume.source;
+package org.victor.flume.source;
 
 import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.type.StandardBasicTypes;

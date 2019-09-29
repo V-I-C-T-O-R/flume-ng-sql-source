@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.keedio.flume.flume-ng-sources</groupId>
+    <groupId>org.victor.flume.flume-ng-sources</groupId>
     <artifactId>flume-ng-sql-source</artifactId>
     <version>1.5.3-SNAPSHOT</version>
 
@@ -9,41 +9,14 @@
     <name>Flume SQL Source</name>
     <description>This project is used for flume-ng to import data from SQL databases.</description>
 
-    <url>https://github.com/keedio/flume-ng-sql-source</url>
+    <url>https://github.com/V-I-C-T-O-R/flume-ng-sql-source</url>
 
     <licenses>
         <license>
-            <name>The Apache License, Version 2.0</name>
+            <name>MIT License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-
-    <developers>
-        <developer>
-            <name>Luis Alfonso Lázaro Medina</name>
-            <email>lalazaro@keedio.org</email>
-            <organization>Keedio</organization>
-            <organizationUrl>http://www.keedio.com</organizationUrl>
-        </developer>
-        <developer>
-            <name>Marcelo Valle Ávila</name>
-            <email>mvalle@keedio.org</email>
-            <organization>Keedio</organization>
-            <organizationUrl>http://www.keedio.com</organizationUrl>
-        </developer>
-        <developer>
-            <name>Luca Rosellini</name>
-            <email>lrosellini@keedio.org</email>
-            <organization>Keedio</organization>
-            <organizationUrl>http://www.keedio.com</organizationUrl>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:git@github.com:keedio/flume-ng-sql-source.git</connection>
-        <developerConnection>scm:git:git@github.com:keedio/flume-ng-sql-source.git</developerConnection>
-        <url>https://github.com/keedio/flume-ng-sql-source.git</url>
-    </scm>
 
     <dependencies>
         <dependency>

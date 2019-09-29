@@ -1,6 +1,5 @@
-package org.keedio.flume.source;
+package org.victor.flume.source;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.hibernate.CacheMode;
@@ -10,7 +9,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
