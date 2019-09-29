@@ -121,9 +121,9 @@ public class HibernateHelper {
 				LOG.info("执行查询max时间sql:"+sql);
 				max = session.createSQLQuery(sql).setResultTransformer(Transformers.TO_LIST).list();
 				maxTime = max.get(0).get(0).toString();
-				if(!sqlSourceHelper.isTimeColumnIntType()) {
-					maxTime = maxTime.substring(0,19);
-				}
+//				if(!sqlSourceHelper.isTimeColumnIntType()) {
+//					maxTime = maxTime.substring(0,19);
+//				}
 			}catch (Exception e){
 				LOG.info("执行查询max时间异常,连接被重置:",e);
 				resetConnection();
