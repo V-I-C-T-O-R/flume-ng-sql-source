@@ -136,6 +136,8 @@ public class HibernateHelper {
 		}
 
 		try {
+			//防止同一批次不同事物插入造成数据误差,暂延迟1秒
+			Thread.sleep(1000);
 			String executSql = sqlSourceHelper.buildQuery(maxTime);
 			LOG.info("执行sql:"+executSql);
 			if (sqlSourceHelper.isCustomQuerySet()){
