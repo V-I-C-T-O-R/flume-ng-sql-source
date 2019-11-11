@@ -16,11 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.flume.instrumentation.MonitoredCounterGroup;
 
-/**
- *
- * @author <a href="mailto:lalazaro@keedio.com">Luis Lazaro</a>
- * @author <a href="mailto:mvalle@keedio.com">Marcelo Valle</a>
- */
 public class SqlSourceCounter extends MonitoredCounterGroup implements SqlSourceCounterMBean {
 
 	private long startProcessTime;

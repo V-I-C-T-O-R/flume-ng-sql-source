@@ -20,7 +20,7 @@ import static org.json.simple.parser.ParseException.ERROR_UNEXPECTED_EXCEPTION;
  * Helper to manage configuration parameters and utility methods <p>
  * <p>
  * Configuration parameters readed from flume configuration file:
- * <tt>type: </tt> org.keedio.flume.source.SQLSource <p>
+ * <tt>type: </tt> org.victor.flume.source.SQLSource <p>
  * <tt>table: </tt> table to read from <p>
  * <tt>columns.to.select: </tt> columns to select for import data (* will import all) <p>
  * <tt>run.query.delay: </tt> delay time to execute each query to database <p>
@@ -30,8 +30,6 @@ import static org.json.simple.parser.ParseException.ERROR_UNEXPECTED_EXCEPTION;
  * <tt>max.rows: </tt> Max rows to import from DB in one query <p>
  * <tt>custom.query: </tt> Custom query to execute to database (be careful) <p>
  *
- * @author <a href="mailto:mvalle@keedio.com">Marcelo Valle</a>
- * @author <a href="mailto:lalazaro@keedio.com">Luis Lazaro</a>
  */
 
 public class SQLSourceHelper {

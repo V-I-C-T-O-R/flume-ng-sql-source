@@ -42,7 +42,6 @@ import java.util.Map;
 /**
  * A Source to read data from a SQL database. This source ask for new data in a table each configured time.<p>
  *
- * @author <a href="mailto:mvalle@keedio.com">Marcelo Valle</a>
  */
 public class SQLSource extends AbstractPollableSource implements Configurable{
     private static final Logger LOG = LoggerFactory.getLogger(SQLSource.class);
