@@ -48,6 +48,13 @@ public class HibernateHelper {
 			e = it.next();
 			config.setProperty("hibernate." + e.getKey(), e.getValue());
 		}
+
+		//serviceRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+		/*
+		 *new ServiceRegistryBuilder()此方法已废弃，可使用下面的方式获取ServiceRegistry
+		 */
+//		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+//		factory = config.buildSessionFactory(serviceRegistry);
 	}
 
 	/**
@@ -61,7 +68,9 @@ public class HibernateHelper {
 			factory = config.buildSessionFactory(serviceRegistry);
 		}
 
-		session = factory.openSession();
+		LOG.info("hibernate factory ready to open session");
+		if(session == null || !session.isOpen() || !session.isConnected())
+			session = factory.openSession();
 		session.setCacheMode(CacheMode.IGNORE);
 		session.setDefaultReadOnly(sqlSourceHelper.isReadOnlySession());
 		LOG.info("Open hibernate session finished");
@@ -74,7 +83,9 @@ public class HibernateHelper {
 
 		LOG.info("Closing hibernate session");
 		try{
-			if(session.isOpen() || session.isConnected())
+//			if(session.isOpen() || session.isConnected())
+//				session.close();
+			if(session != null)
 				session.close();
 			LOG.info("Close hibernate session finished");
 		}catch (Exception e){
@@ -83,10 +94,12 @@ public class HibernateHelper {
 		closeFactory();
 	}
 
-	public void closeFactory(){
+	private void closeFactory(){
 		LOG.info("Closing hibernate factory");
 		try{
-			if(!factory.isClosed())
+//			if(!factory.isClosed())
+//				factory.close();
+			if(factory != null)
 				factory.close();
 			LOG.info("Closing hibernate factory finished");
 		}catch (Exception e){
@@ -134,7 +147,7 @@ public class HibernateHelper {
 		}
 
 		try {
-			//防止同一批次不同事物插入造成数据误差,暂延迟1秒
+			//为了业务里面数据误差,延迟1秒
 			Thread.sleep(1000);
 			String executSql = sqlSourceHelper.buildQuery(maxTime);
 			LOG.info("执行sql:"+executSql);
