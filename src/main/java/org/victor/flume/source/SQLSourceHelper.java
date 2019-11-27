@@ -40,7 +40,7 @@ public class SQLSourceHelper {
     private int runQueryDelay, batchSize, maxRows;
     private String startFrom, currentIndex, timeColumn, timeColumnType, sourceType, transferMethod;
     private String statusFilePath, statusFileName, connectionURL, table,
-            columnsToSelect, customQuery, query, sourceName;
+            columnsToSelect, customQuery, query, sourceName,customCondition;
 
     private Context context;
 
@@ -89,6 +89,7 @@ public class SQLSourceHelper {
         runQueryDelay = context.getInteger("run.query.delay", DEFAULT_QUERY_DELAY);
         directory = new File(statusFilePath);
         customQuery = context.getString("custom.query");
+        customCondition = context.getString("custom.condition");
         batchSize = context.getInteger("batch.size", DEFAULT_BATCH_SIZE);
         maxRows = context.getInteger("max.rows", DEFAULT_MAX_ROWS);
         timeColumn = context.getString("time.column");
@@ -121,6 +122,8 @@ public class SQLSourceHelper {
     }
 
     public String maxQuery() {
+        if(customCondition != null && !"".equals(customCondition))
+            return "SELECT max(" + timeColumn + ") FROM " + table + " where " + customCondition;
         return "SELECT max(" + timeColumn + ") FROM " + table;
     }
 
