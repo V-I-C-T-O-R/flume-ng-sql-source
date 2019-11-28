@@ -138,6 +138,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
         try
         {
             hibernateHelper.closeSession();
+            hibernateHelper.closeFactory();
             customWriter.close();
         } catch (IOException e) {
             LOG.warn("Error ChannelWriter object ", e);

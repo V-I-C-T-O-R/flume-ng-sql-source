@@ -2,10 +2,7 @@ package org.victor.flume.source;
 
 import java.util.*;
 
-import org.hibernate.CacheMode;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
@@ -83,27 +80,27 @@ public class HibernateHelper {
 
 		LOG.info("Closing hibernate session");
 		try{
-//			if(session.isOpen() || session.isConnected())
-//				session.close();
-			if(session != null)
+			if(session != null && (session.isOpen() || session.isConnected()))
 				session.close();
 			LOG.info("Close hibernate session finished");
-		}catch (Exception e){
+		}catch (HibernateException e){
 			LOG.error("close session resources error",e);
+		} catch (Exception e){
+			LOG.error("close resources error",e);
 		}
-		closeFactory();
+//		closeFactory();
 	}
 
-	private void closeFactory(){
+	public void closeFactory(){
 		LOG.info("Closing hibernate factory");
 		try{
-//			if(!factory.isClosed())
-//				factory.close();
-			if(factory != null)
+			if(factory != null && !factory.isClosed())
 				factory.close();
 			LOG.info("Closing hibernate factory finished");
-		}catch (Exception e){
+		}catch (HibernateException e){
 			LOG.error("close session factory error",e);
+		} catch (Exception e){
+			LOG.error("close factory error",e);
 		}
 	}
 
