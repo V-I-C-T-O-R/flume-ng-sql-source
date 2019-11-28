@@ -88,7 +88,7 @@ public class HibernateHelper {
 		} catch (Exception e){
 			LOG.error("close resources error",e);
 		}
-//		closeFactory();
+		closeFactory();
 	}
 
 	public void closeFactory(){

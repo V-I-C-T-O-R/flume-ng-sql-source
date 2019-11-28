@@ -154,7 +154,8 @@ agent.sources.sqlSource.hibernate.connection.provider_class = org.hibernate.conn
 agent.sources.sqlSource.hibernate.c3p0.max_size = 5
 agent.sources.sqlSource.hibernate.c3p0.min_size = 3
 agent.sources.sqlSource.hibernate.c3p0.timeout = 5000
-agent.sources.sqlSource.hibernate.c3p0.max_statements = 10
+# 此处max_statements修改为0
+agent.sources.sqlSource.hibernate.c3p0.max_statements = 0
 agent.sources.sqlSource.hibernate.c3p0.idle_test_period = 3000
 agent.sources.sqlSource.hibernate.c3p0.acquire_increment = 1
 agent.sources.sqlSource.hibernate.c3p0.validate = true
