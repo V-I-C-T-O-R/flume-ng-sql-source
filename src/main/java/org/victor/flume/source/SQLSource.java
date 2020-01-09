@@ -97,7 +97,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
 
             sqlSourceCounter.endProcess(result.size());
         } catch (IOException | InterruptedException e) {
-            LOG.error("Error procesing row", e);
+            LOG.error("IOException or InterruptedException exception", e);
             return Status.BACKOFF;
         } catch (Exception e) {
             LOG.error("Unknow Error:", e);
@@ -135,18 +135,19 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
 
         LOG.info("Stopping sql source {} ...", getName());
 
-        try
-        {
+        try {
             hibernateHelper.closeSession();
             customWriter.close();
         } catch (IOException e) {
             LOG.warn("Error ChannelWriter object ", e);
+        } catch (Exception e) {
+            LOG.warn("Error close session object ", e);
         } finally {
             this.sqlSourceCounter.stop();
         }
     }
 
-    private class ChannelWriter{
+    private class ChannelWriter {
         private List<Event> events = new ArrayList<>();
 
         public void write(List<Map<String, Object>> mapAlls) throws IOException {
@@ -161,10 +162,10 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
 //                        ,SerializerFeature.WriteMapNullValue
 //                        );
                 String jsonBody = JSON.toJSONString(map, SerializerFeature.WriteNullStringAsEmpty
-                        ,SerializerFeature.WriteEnumUsingToString
-                        ,SerializerFeature.WriteNullBooleanAsFalse
-                        ,SerializerFeature.WriteNullListAsEmpty
-                        ,SerializerFeature.WriteMapNullValue
+                        , SerializerFeature.WriteEnumUsingToString
+                        , SerializerFeature.WriteNullBooleanAsFalse
+                        , SerializerFeature.WriteNullListAsEmpty
+                        , SerializerFeature.WriteMapNullValue
                 );
                 //simple-json转json字符串有漏洞
                 //String jsonBody = JSONValue.toJSONString(map);
