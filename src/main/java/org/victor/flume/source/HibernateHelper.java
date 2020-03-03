@@ -58,7 +58,7 @@ public class HibernateHelper {
 	/**
 	 * Connect to database using hibernate
 	 */
-	public void establishSession() throws InterruptedException {
+	public void establishSession() throws Exception {
 
 		LOG.info("Opening hibernate session");
 		if (factory == null || factory.isClosed()) {
@@ -114,7 +114,7 @@ public class HibernateHelper {
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> executeQuery() throws InterruptedException {
+	public List<Map<String, Object>> executeQuery() throws Exception {
 
 		List<Map<String, Object>> rowsList = new ArrayList<Map<String, Object>>();
 		Query query;
@@ -181,7 +181,7 @@ public class HibernateHelper {
 		return rowsList;
 	}
 
-	private void resetConnection() throws InterruptedException {
+	private void resetConnection() throws Exception {
 		closeSession();
 		establishSession();
 	}
