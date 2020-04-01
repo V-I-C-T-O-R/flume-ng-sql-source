@@ -100,7 +100,10 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
             LOG.error("IOException or InterruptedException exception", e);
             return Status.BACKOFF;
         } catch (Exception e) {
-            LOG.error("Unknow Error:", e);
+            LOG.error("unknow exception error:", e);
+            return Status.BACKOFF;
+        } catch (Throwable t){
+            LOG.error("unknow throwable error:", t);
             return Status.BACKOFF;
         } finally {
             hibernateHelper.closeSession();
