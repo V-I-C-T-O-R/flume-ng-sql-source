@@ -3,6 +3,7 @@ package org.victor.flume.source;
 import java.util.*;
 
 import org.hibernate.*;
+import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
@@ -16,7 +17,7 @@ import org.apache.flume.Context;
  *
  */
 public class HibernateHelper {
-
+	private final String HIBERNATE_PREFIX = "hibernate.";
 	private static final Logger LOG = LoggerFactory
 			.getLogger(HibernateHelper.class);
 
@@ -36,7 +37,7 @@ public class HibernateHelper {
 		this.sqlSourceHelper = sqlSourceHelper;
 		Context context = sqlSourceHelper.getContext();
 
-		Map<String, String> hibernateProperties = context.getSubProperties("hibernate.");
+		Map<String, String> hibernateProperties = context.getSubProperties(HIBERNATE_PREFIX);
 		Iterator<Map.Entry<String, String>> it = hibernateProperties.entrySet().iterator();
 
 		config = new Configuration();
@@ -44,34 +45,47 @@ public class HibernateHelper {
 
 		while (it.hasNext()) {
 			e = it.next();
-			config.setProperty("hibernate." + e.getKey(), e.getValue());
+			config.setProperty(HIBERNATE_PREFIX + e.getKey(), e.getValue());
 		}
 
 		//serviceRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
 		/*
 		 *new ServiceRegistryBuilder()此方法已废弃，可使用下面的方式获取ServiceRegistry
 		 */
-//		serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-//		factory = config.buildSessionFactory(serviceRegistry);
+		//serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+		//factory = config.buildSessionFactory(serviceRegistry);
+		setHibernateFactory();
+	}
+
+	private void setHibernateFactory() {
+		try {
+			LOG.info("Opening hibernate session");
+			serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+			factory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
+			LOG.info("Complete hibernate session");
+		} catch (HibernateException e) {
+			LOG.error("Factory HibernateException:", e);
+		} catch (Exception e) {
+			LOG.error("Factory Exception:", e);
+		} catch (Throwable t) {
+			LOG.error("Unknow Exception:", t);
+		}
 	}
 
 	/**
 	 * Connect to database using hibernate
 	 */
 	public void establishSession() throws Exception {
-
-		LOG.info("Opening hibernate session");
 		if (factory == null || factory.isClosed()) {
-			serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-			factory = config.buildSessionFactory(serviceRegistry);
+			LOG.info("hibernate factory is closed! ready to open factory");
+			setHibernateFactory();
 		}
 
 		LOG.info("hibernate factory ready to open session");
-		if (session == null || !session.isOpen() || !session.isConnected())
-			session = factory.openSession();
+		session = factory.openSession();
 		session.setCacheMode(CacheMode.IGNORE);
 		session.setDefaultReadOnly(sqlSourceHelper.isReadOnlySession());
-		LOG.info("Open hibernate session finished");
+		LOG.info("hibernate factory open session finished");
 	}
 
 	/**
@@ -81,7 +95,7 @@ public class HibernateHelper {
 
 		LOG.info("Closing hibernate session");
 		try {
-			if (session != null && (session.isOpen() || session.isConnected()))
+			if (session != null && session.isOpen())
 				session.close();
 			LOG.info("Close hibernate session finished");
 		} catch (HibernateException e) {
@@ -89,7 +103,7 @@ public class HibernateHelper {
 		} catch (Exception e) {
 			LOG.error("close resources error", e);
 		}
-		closeFactory();
+
 	}
 
 	public void closeFactory() {
@@ -131,9 +145,6 @@ public class HibernateHelper {
 				LOG.info("执行查询max时间sql:" + sql);
 				max = session.createSQLQuery(sql).setResultTransformer(Transformers.TO_LIST).list();
 				maxTime = max.get(0).get(0).toString();
-//				if(!sqlSourceHelper.isTimeColumnIntType()) {
-//					maxTime = maxTime.substring(0,19);
-//				}
 			} catch (Exception e) {
 				LOG.info("执行查询max时间异常,连接被重置:", e);
 				resetConnection();
@@ -183,6 +194,7 @@ public class HibernateHelper {
 
 	private void resetConnection() throws Exception {
 		closeSession();
+		closeFactory();
 		establishSession();
 	}
 }

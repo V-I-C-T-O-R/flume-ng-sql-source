@@ -100,12 +100,13 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
             LOG.error("IOException or InterruptedException exception", e);
             return Status.BACKOFF;
         } catch (Exception e) {
-            LOG.error("unknow exception error:", e);
+            LOG.error("Unknow Exception:", e);
             return Status.BACKOFF;
         } catch (Throwable t){
-            LOG.error("unknow throwable error:", t);
+            LOG.error("Unknow Error:", t);
             return Status.BACKOFF;
-        } finally {
+        }
+        finally {
             hibernateHelper.closeSession();
         }
 
@@ -140,6 +141,7 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
 
         try {
             hibernateHelper.closeSession();
+            hibernateHelper.closeFactory();
             customWriter.close();
         } catch (IOException e) {
             LOG.warn("Error ChannelWriter object ", e);
