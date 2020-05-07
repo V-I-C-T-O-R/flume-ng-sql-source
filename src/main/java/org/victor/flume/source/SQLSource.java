@@ -165,12 +165,14 @@ public class SQLSource extends AbstractPollableSource implements Configurable{
 //                        ,SerializerFeature.WriteNullBooleanAsFalse
 //                        ,SerializerFeature.WriteNullListAsEmpty
 //                        ,SerializerFeature.WriteMapNullValue
+//                        , SerializerFeature.WriteBigDecimalAsPlain
 //                        );
                 String jsonBody = JSON.toJSONString(map, SerializerFeature.WriteNullStringAsEmpty
                         , SerializerFeature.WriteEnumUsingToString
                         , SerializerFeature.WriteNullBooleanAsFalse
                         , SerializerFeature.WriteNullListAsEmpty
                         , SerializerFeature.WriteMapNullValue
+                        , SerializerFeature.WriteBigDecimalAsPlain
                 );
                 //simple-json转json字符串有漏洞
                 //String jsonBody = JSONValue.toJSONString(map);
