@@ -11,6 +11,7 @@ Current sql database engines supported：
 -------------------------------
 - After the last update the code has been integrated with hibernate, so all databases supported by this technology should work.
 - 理论上支持大多数数据源
+- 注意mysql tinyint数据类型查询编程false和true的问题
 
 Compilation and packaging
 ----------
